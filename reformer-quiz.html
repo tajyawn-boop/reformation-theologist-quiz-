@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나는 어떤 개혁자일까? · 종교개혁 인물 성향 테스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-top:#0a1228;
+    --bg-mid:#0e1b3d;
+    --bg-deep:#060a1a;
+    --star:#eaf2ff;
+    --text:#dde6f7;
+    --text-soft:#9fb0d4;
+    --gold:#e8c66a;
+    --gold-bright:#f6dd8a;
+    --gold-deep:#b8902f;
+    --sky:#5b8fd6;
+    --sky-glow:#8fc0ff;
+    --line:rgba(150,180,235,.22);
+    --panel:rgba(20,34,68,.55);
+    --panel-edge:rgba(140,175,235,.18);
+    --glow:rgba(143,192,255,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Gowun Batang',serif;
+    color:var(--text);
+    background:
+      radial-gradient(ellipse at 50% -10%, #1a2c58 0%, transparent 55%),
+      radial-gradient(ellipse at 15% 25%, rgba(91,143,214,.16), transparent 45%),
+      radial-gradient(ellipse at 85% 75%, rgba(232,198,106,.08), transparent 50%),
+      linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-deep) 100%);
+    background-attachment:fixed;
+    min-height:100%;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  #sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  #sky canvas{position:absolute;inset:0;width:100%;height:100%;}
+  .wrap{position:relative;z-index:2;max-width:780px;margin:0 auto;padding:48px 22px 80px;}
+
+  /* ── INTRO ── */
+  .crest{
+    text-align:center;margin-bottom:6px;font-size:36px;color:var(--gold);
+    text-shadow:0 0 18px var(--glow),0 0 6px rgba(232,198,106,.6);
+    animation:pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:.85;}50%{opacity:1;text-shadow:0 0 26px var(--glow),0 0 10px rgba(232,198,106,.8);}}
+  .kicker{
+    text-align:center;font-family:'Cinzel',serif;letter-spacing:.32em;
+    font-size:12px;color:var(--gold);text-transform:uppercase;margin-bottom:18px;opacity:.9;
+  }
+  h1{
+    font-family:'Gowun Batang',serif;font-weight:700;text-align:center;
+    font-size:clamp(30px,7vw,46px);line-height:1.25;color:#fff;
+    letter-spacing:-.01em;margin-bottom:6px;
+    text-shadow:0 0 30px rgba(143,192,255,.4);
+  }
+  h1 .em{color:var(--gold);text-shadow:0 0 22px rgba(232,198,106,.55);}
+  .sub{text-align:center;color:var(--text-soft);font-size:16px;max-width:520px;margin:14px auto 0;}
+  .rule{
+    width:140px;height:1px;margin:30px auto;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    position:relative;
+  }
+  .rule::after{
+    content:"✦";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    color:var(--gold);font-size:13px;padding:0 10px;background:transparent;
+    text-shadow:0 0 12px var(--glow);
+  }
+  .figures-preview{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:26px auto 0;max-width:600px;
+  }
+  .figures-preview span{
+    font-family:'Cinzel',serif;font-size:12px;letter-spacing:.05em;
+    color:var(--sky-glow);border:1px solid var(--line);
+    padding:5px 11px;border-radius:2px;background:rgba(40,64,120,.25);
+    backdrop-filter:blur(2px);cursor:pointer;transition:all .15s ease;
+  }
+  .figures-preview span:hover{
+    color:var(--gold);border-color:var(--gold);background:rgba(40,64,120,.5);
+    box-shadow:0 0 14px -3px rgba(232,198,106,.4);transform:translateY(-2px);
+  }
+
+  /* ── INFO MODAL ── */
+  .modal-bg{
+    display:none;position:fixed;inset:0;z-index:50;
+    background:rgba(4,8,20,.72);backdrop-filter:blur(4px);
+    align-items:center;justify-content:center;padding:22px;
+    animation:fade .3s ease;
+  }
+  .modal-bg.on{display:flex;}
+  .modal{
+    position:relative;max-width:560px;width:100%;max-height:86vh;overflow-y:auto;
+    background:linear-gradient(180deg, rgba(24,40,78,.96), rgba(14,26,54,.96));
+    border:1px solid var(--gold);border-radius:12px;padding:34px 30px 30px;
+    box-shadow:0 24px 70px -20px rgba(0,0,0,.8), 0 0 50px -10px rgba(232,198,106,.25);
+    animation:rise .35s ease;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(20px) scale(.97);}to{opacity:1;transform:none;}}
+  .modal-close{
+    position:absolute;top:14px;right:16px;cursor:pointer;
+    width:34px;height:34px;border:1px solid var(--line);border-radius:50%;
+    background:rgba(40,64,120,.4);color:var(--text);font-size:18px;line-height:1;
+    display:flex;align-items:center;justify-content:center;transition:all .15s ease;
+  }
+  .modal-close:hover{border-color:var(--gold);color:var(--gold);transform:rotate(90deg);}
+  .modal .res-portrait{width:96px;height:96px;font-size:46px;margin-bottom:14px;}
+  .modal .res-name{font-size:clamp(26px,6vw,34px);}
+  .modal-bio{margin-top:6px;}
+  .modal-bio p{color:var(--text);font-size:15px;margin-bottom:10px;line-height:1.7;}
+  .modal-verse{
+    font-style:italic;color:var(--gold);text-align:center;font-size:15px;
+    padding:14px 0 0;border-top:1px solid var(--line);margin-top:16px;
+  }
+  .modal-verse .ref{display:block;font-style:normal;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.15em;color:var(--sky-glow);margin-top:8px;}
+  .start-card{
+    margin:36px auto 0;max-width:560px;text-align:center;
+    background:var(--panel);border:1px solid var(--panel-edge);
+    border-radius:8px;padding:30px 26px;
+    box-shadow:0 14px 50px -20px rgba(0,0,0,.6), inset 0 1px 0 rgba(180,210,255,.08);
+    backdrop-filter:blur(6px);
+  }
+  .start-card p{color:var(--text-soft);font-size:15px;margin-bottom:6px;}
+  .btn{
+    display:inline-block;cursor:pointer;border:1px solid rgba(246,221,138,.5);
+    font-family:'Cinzel',serif;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;font-size:14px;
+    color:#1a1206;background:linear-gradient(145deg,var(--gold-bright),var(--gold-deep));
+    padding:16px 40px;border-radius:4px;margin-top:18px;
+    box-shadow:0 0 24px -4px rgba(232,198,106,.5), 0 10px 24px -12px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.4);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 0 34px -2px rgba(232,198,106,.7), 0 16px 30px -14px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.5);}
+  .btn:active{transform:translateY(0);}
+  .btn.gold{background:linear-gradient(145deg,var(--gold-bright),var(--gold-deep));}
+
+  /* ── QUIZ ── */
+  .stage{display:none;}
+  .stage.active{display:block;animation:fade .5s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  .progress-rail{height:3px;background:rgba(120,150,210,.18);border-radius:3px;margin-bottom:8px;overflow:hidden;}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--sky-glow),var(--gold));transition:width .4s ease;box-shadow:0 0 10px var(--glow);}
+  .progress-label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold);text-align:right;margin-bottom:26px;}
+
+  .scene-num{font-family:'Cinzel',serif;color:var(--gold);font-size:13px;letter-spacing:.2em;margin-bottom:12px;text-shadow:0 0 14px rgba(232,198,106,.4);}
+  .scene-text{font-size:clamp(19px,3.6vw,23px);font-weight:700;line-height:1.55;color:#fff;margin-bottom:8px;text-shadow:0 0 24px rgba(143,192,255,.3);}
+  .scene-flavor{color:var(--text-soft);font-size:15px;margin-bottom:26px;font-style:italic;}
+
+  .choices{display:flex;flex-direction:column;gap:12px;}
+  .choice{
+    text-align:left;cursor:pointer;font-family:'Gowun Batang',serif;font-size:16px;
+    color:var(--text);background:var(--panel);
+    border:1px solid var(--panel-edge);border-radius:6px;padding:17px 20px;
+    line-height:1.55;transition:all .16s ease;position:relative;
+    backdrop-filter:blur(4px);
+  }
+  .choice:hover{
+    border-color:var(--gold);background:rgba(34,54,104,.7);
+    transform:translateX(4px);
+    box-shadow:-4px 6px 26px -12px rgba(0,0,0,.6), 0 0 18px -4px rgba(232,198,106,.3);
+  }
+  .choice::before{
+    content:"";display:inline-block;width:8px;height:8px;margin-right:12px;
+    border:1px solid var(--gold);transform:rotate(45deg);vertical-align:middle;
+    transition:all .16s ease;
+  }
+  .choice:hover::before{background:var(--gold);box-shadow:0 0 10px var(--gold);}
+
+  /* ── RESULT ── */
+  #result .crest{font-size:30px;}
+  .res-kicker{text-align:center;font-family:'Cinzel',serif;letter-spacing:.25em;font-size:12px;color:var(--gold);text-transform:uppercase;}
+  .res-name{font-family:'Gowun Batang',serif;font-weight:700;text-align:center;font-size:clamp(30px,7vw,44px);color:var(--gold);margin:6px 0 2px;text-shadow:0 0 28px rgba(232,198,106,.5);}
+  .res-name-en{text-align:center;font-family:'Cinzel',serif;font-size:14px;letter-spacing:.16em;color:var(--text-soft);margin-bottom:4px;}
+  .res-life{text-align:center;font-size:13px;color:var(--sky-glow);font-family:'Cinzel',serif;letter-spacing:.08em;margin-bottom:22px;}
+  .res-tagline{
+    text-align:center;font-size:18px;font-weight:700;color:#fff;
+    max-width:520px;margin:0 auto 28px;line-height:1.6;
+    text-shadow:0 0 20px rgba(143,192,255,.3);
+  }
+  .res-portrait{
+    width:124px;height:124px;margin:0 auto 18px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:58px;
+    background:radial-gradient(circle at 35% 30%, #2a4170, #101d38);
+    border:2px solid var(--gold);
+    box-shadow:0 0 40px -6px rgba(232,198,106,.55), inset 0 2px 16px rgba(143,192,255,.25);
+    animation:pulse 5s ease-in-out infinite;
+  }
+  .panel{
+    background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;
+    padding:24px 26px;margin-bottom:16px;
+    box-shadow:0 12px 40px -22px rgba(0,0,0,.6), inset 0 1px 0 rgba(180,210,255,.06);
+    backdrop-filter:blur(6px);
+  }
+  .panel h3{
+    font-family:'Cinzel',serif;font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:9px;
+  }
+  .panel h3::before{content:"";width:18px;height:1px;background:var(--gold);display:inline-block;box-shadow:0 0 8px var(--gold);}
+  .panel p{color:var(--text);font-size:15.5px;margin-bottom:10px;}
+  .panel p:last-child{margin-bottom:0;}
+  .verse{
+    font-style:italic;color:var(--gold);text-align:center;font-size:16px;
+    padding:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    margin:4px 0;text-shadow:0 0 16px rgba(232,198,106,.3);
+  }
+  .verse .ref{display:block;font-style:normal;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.15em;color:var(--sky-glow);margin-top:8px;text-shadow:none;}
+  .traits{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px;}
+  .traits span{font-size:13px;color:var(--sky-glow);background:rgba(40,64,120,.4);border:1px solid var(--line);border-radius:3px;padding:5px 12px;}
+  .res-actions{display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:30px;}
+  .small{font-size:13px;color:var(--text-soft);text-align:center;margin-top:4px;}
+  .foot{text-align:center;margin-top:40px;font-size:12px;color:var(--text-soft);font-family:'Cinzel',serif;letter-spacing:.12em;}
+</style>
+</head>
+<body>
+<div id="sky"><canvas id="starCanvas"></canvas></div>
+<div class="wrap">
+
+  <!-- ===== INTRO ===== -->
+  <section id="intro" class="stage active">
+    <div class="crest">📖</div>
+    <div class="kicker">Reformation · 종교개혁 인물 테스트</div>
+    <h1>나는 어떤 <span class="em">개혁자</span>일까?</h1>
+    <p class="sub">성경 시대의 한복판으로 들어가 보세요. 당신의 선택이, 교회 역사를 바꾼 한 인물과 당신을 이어줍니다.</p>
+    <hr class="rule">
+    <div class="figures-preview">
+      <span onclick="showInfo('luther')">Luther</span><span onclick="showInfo('augustine')">Augustine</span><span onclick="showInfo('calvin')">Calvin</span><span onclick="showInfo('knox')">Knox</span>
+      <span onclick="showInfo('bora')">von Bora</span><span onclick="showInfo('hus')">Hus</span><span onclick="showInfo('wycliffe')">Wycliffe</span><span onclick="showInfo('waldo')">Waldo</span>
+    </div>
+    <p class="small" style="margin-top:12px;">이름을 눌러 각 인물의 이야기를 미리 볼 수 있어요</p>
+    <div class="start-card">
+      <p>10개의 이야기 속 상황이 펼쳐집니다.</p>
+      <p>정답은 없습니다. 가장 당신다운 선택을 고르세요.</p>
+      <button class="btn" onclick="start()">테스트 시작하기</button>
+    </div>
+    <div class="foot">총신 · 청소년부 &nbsp;·&nbsp; Soli Deo Gloria</div>
+  </section>
+
+  <!-- ===== QUIZ ===== -->
+  <section id="quiz" class="stage">
+    <div class="progress-rail"><div class="progress-fill" id="pfill"></div></div>
+    <div class="progress-label" id="plabel">SCENE 1 / 10</div>
+    <div class="scene-num" id="snum">첫 번째 이야기</div>
+    <div class="scene-text" id="stext"></div>
+    <div class="scene-flavor" id="sflavor"></div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <!-- ===== RESULT ===== -->
+  <section id="result" class="stage">
+    <div class="crest">📖</div>
+    <div class="res-kicker">당신과 닮은 개혁자</div>
+    <div class="res-portrait" id="rPortrait">📖</div>
+    <div class="res-name" id="rName"></div>
+    <div class="res-name-en" id="rNameEn"></div>
+    <div class="res-life" id="rLife"></div>
+    <div class="res-tagline" id="rTagline"></div>
+
+    <div class="traits" id="rTraits"></div>
+
+    <div class="panel">
+      <h3>이 사람은 누구인가요</h3>
+      <div id="rBio"></div>
+    </div>
+
+    <div class="panel">
+      <h3>당신과 닮은 점</h3>
+      <div id="rMatch"></div>
+    </div>
+
+    <div class="panel">
+      <h3>함께 자라갈 부분</h3>
+      <div id="rGrowth"></div>
+    </div>
+
+    <div class="panel">
+      <div class="verse" id="rVerse"></div>
+    </div>
+
+    <div class="res-actions">
+      <button class="btn gold" onclick="restart()">다시 해보기</button>
+      <div class="small">친구들에게도 공유해 보세요 — 우리 부서엔 어떤 개혁자들이 있을까요?</div>
+    </div>
+    <div class="foot">총신 · 청소년부 &nbsp;·&nbsp; Soli Deo Gloria</div>
+  </section>
+
+</div>
+
+<!-- ===== INFO MODAL ===== -->
+<div class="modal-bg" id="infoModal" onclick="closeInfoBg(event)">
+  <div class="modal">
+    <div class="modal-close" onclick="closeInfo()">×</div>
+    <div class="res-portrait" id="mPortrait">📖</div>
+    <div class="res-name" id="mName"></div>
+    <div class="res-name-en" id="mNameEn"></div>
+    <div class="res-life" id="mLife"></div>
+    <div class="traits" id="mTraits" style="margin-bottom:18px;"></div>
+    <div class="modal-bio" id="mBio"></div>
+    <div class="modal-verse" id="mVerse"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   8 RESULTS — Reformation & pre-Reformation figures
+   keys: luther, augustine, calvin, knox, bora, hus, wycliffe, waldo
+   ============================================================ */
+const FIGURES = {
+  luther: {
+    name:"마르틴 루터", en:"Martin Luther", life:"1483 – 1546 · 독일", icon:"📜",
+    tagline:"잘못된 것 앞에서 침묵할 수 없는 사람. 두려움보다 진리를 택하는 용기의 사람입니다.",
+    traits:["용기","정직","개혁의 불꽃"],
+    bio:[
+      "독일의 수도사이자 신학 교수였던 마르틴 루터는, 당시 교회가 '면죄부'를 팔며 돈으로 죄 용서를 약속하던 관행에 깊이 분노했습니다.",
+      "1517년, 그는 95개조의 반박문을 비텐베르크 교회 문에 내걸며 공개적으로 문제를 제기했고, 이 사건은 종교개혁의 출발점이 되었습니다.",
+      "황제와 교황 앞에서 자신의 주장을 철회하라는 압박을 받았을 때, 그는 \"제 양심은 하나님의 말씀에 매여 있습니다. 저는 여기 서 있습니다\"라고 답했습니다. 또한 성경을 일반 백성이 읽을 수 있도록 독일어로 번역했습니다."
+    ],
+    match:[
+      "당신은 옳지 않다고 느끼는 일을 보면 그냥 지나치지 못합니다. 모두가 침묵할 때 손을 드는 사람이지요.",
+      "결정을 내리면 흔들리지 않는 단단함이 있고, 그 용기가 주변 사람들에게 변화의 시작이 되곤 합니다."
+    ],
+    growth:[
+      "강한 신념은 큰 힘이지만, 때로는 다른 사람의 마음을 거칠게 할 수 있어요. 진리를 말하되 사랑의 온도를 더해 보세요.",
+      "혼자 다 짊어지기보다, 함께 걷는 사람들의 지혜에 귀 기울일 때 그 용기는 더 멀리 갑니다."
+    ],
+    verse:"오직 의인은 믿음으로 말미암아 살리라", ref:"로마서 1:17"
+  },
+  augustine: {
+    name:"아우구스티누스", en:"Augustine of Hippo", life:"354 – 430 · 북아프리카", icon:"🕊️",
+    tagline:"끊임없이 질문하고 갈망하는 사람. 깊은 방황 끝에 더 깊은 진리를 만나는 사람입니다.",
+    traits:["사색","진실한 갈망","깊이"],
+    bio:[
+      "아우구스티누스는 종교개혁보다 천 년 이상 앞선 초대교회의 신학자로, 훗날 루터와 칼뱅 같은 개혁자들이 가장 깊이 의지한 사상의 뿌리였습니다.",
+      "젊은 시절 그는 쾌락과 철학 사이를 방황하며 진리를 찾아 헤맸습니다. 어머니 모니카의 오랜 기도 끝에, 정원에서 \"집어 들고 읽으라\"는 음성을 듣고 성경을 펼친 순간 회심합니다.",
+      "그의 책 『고백록』은 자신의 방황과 은혜의 경험을 솔직하게 담아, 1600년이 지난 지금도 읽히는 고전이 되었습니다."
+    ],
+    match:[
+      "당신은 쉽게 답을 받아들이기보다, 직접 묻고 곱씹어 본 뒤에야 진짜로 믿는 사람입니다.",
+      "마음 깊은 곳의 갈망과 질문이 많은데, 그것이 바로 당신을 더 깊은 신앙으로 이끄는 통로입니다."
+    ],
+    growth:[
+      "질문은 귀한 선물이지만, 모든 답을 얻어야만 한 걸음 내딛을 수 있는 건 아니에요. 때로는 신뢰하며 먼저 걸어도 괜찮습니다.",
+      "생각의 세계에 깊이 머무는 만큼, 그 깨달음을 곁에 있는 사람들과 나누면 더 풍성해집니다."
+    ],
+    verse:"주를 향하도록 지음 받은 우리 마음은, 주 안에서 쉬기까지 안식이 없나이다", ref:"아우구스티누스, 고백록"
+  },
+  calvin: {
+    name:"장 칼뱅", en:"John Calvin", life:"1509 – 1564 · 프랑스 / 제네바", icon:"⚖️",
+    tagline:"흩어진 것을 정리하고 길을 세우는 사람. 명료함과 질서로 진리를 비추는 사람입니다.",
+    traits:["체계","명료함","성실"],
+    bio:[
+      "프랑스 출신의 장 칼뱅은 종교개혁의 가르침을 누구보다 정연하게 정리한 신학자입니다.",
+      "20대의 젊은 나이에 『기독교 강요』를 써서, 흩어져 있던 개혁의 사상을 하나의 명료한 체계로 묶어냈습니다. 이 책은 오늘날까지 개혁주의 신학의 기초로 읽힙니다.",
+      "스위스 제네바에서 그는 교회와 도시를 말씀 위에 새롭게 세우는 일에 평생을 바쳤고, '오직 하나님께 영광'(Soli Deo Gloria)이라는 정신을 분명히 했습니다."
+    ],
+    match:[
+      "당신은 복잡하게 얽힌 상황을 보면, 그것을 차근차근 정리하고 분명하게 만들고 싶어 합니다.",
+      "맡은 일을 끝까지 성실하게 해내며, 원칙과 논리를 소중히 여기는 믿음직한 사람입니다."
+    ],
+    growth:[
+      "정확함을 추구하는 마음은 큰 강점이지만, 사람은 늘 계획대로 움직이지 않아요. 빈틈을 품어주는 여유도 함께 길러 보세요.",
+      "머리로 옳게 아는 것과 마음으로 따뜻하게 다가가는 것이 함께할 때, 당신의 가르침은 더 깊이 가닿습니다."
+    ],
+    verse:"모든 것을 품위 있게 하고 질서 있게 하라", ref:"고린도전서 14:40"
+  },
+  knox: {
+    name:"존 녹스", en:"John Knox", life:"약 1514 – 1572 · 스코틀랜드", icon:"🔥",
+    tagline:"권력 앞에서도 굽히지 않는 사람. 두려움 없이 옳음을 외치는 담대한 지도자입니다.",
+    traits:["담대함","지도력","불굴"],
+    bio:[
+      "존 녹스는 스코틀랜드 종교개혁을 이끈 설교자입니다. 한때 프랑스 군에 잡혀 갤리선의 노예로 노역하는 고난을 겪기도 했습니다.",
+      "그는 강력한 권력자였던 여왕 앞에서도 자신의 신앙적 확신을 굽히지 않고 담대하게 진리를 말한 것으로 유명합니다.",
+      "그의 설교와 지도력은 스코틀랜드 교회 전체를 개혁의 방향으로 이끌었고, 한 나라의 신앙을 바꾸어 놓았습니다."
+    ],
+    match:[
+      "당신은 상대가 아무리 힘이 세거나 지위가 높아도, 옳다고 믿는 것은 분명하게 말할 수 있는 사람입니다.",
+      "어려운 상황에서도 쉽게 물러서지 않고, 사람들을 옳은 방향으로 이끄는 지도자의 기질이 있습니다."
+    ],
+    growth:[
+      "담대함은 멋진 무기지만, 모든 자리에서 강하게 밀어붙일 필요는 없어요. 들어주고 기다려주는 힘도 지도력입니다.",
+      "당신의 강함이 누군가에겐 부담이 될 수도 있어요. 부드러움을 더하면 더 많은 사람이 함께 따라옵니다."
+    ],
+    verse:"강하고 담대하라 두려워하지 말며 놀라지 말라 네 하나님 여호와가 너와 함께 하느니라", ref:"여호수아 1:9"
+  },
+  bora: {
+    name:"카타리나 폰 보라", en:"Katharina von Bora", life:"1499 – 1552 · 독일", icon:"🗝️",
+    tagline:"보이지 않는 곳에서 모든 것을 떠받치는 사람. 실천과 책임감으로 공동체를 살리는 사람입니다.",
+    traits:["실행력","책임감","지혜로운 살림"],
+    bio:[
+      "카타리나 폰 보라는 수녀원에서 종교개혁의 가르침을 접한 뒤, 동료들과 함께 용감하게 수녀원을 빠져나왔습니다. 훗날 마르틴 루터와 결혼합니다.",
+      "그녀는 거대한 가정과 수많은 손님, 학생, 농장과 양조장까지 관리하며 루터의 사역을 든든히 떠받친 실질적인 살림꾼이자 경영자였습니다.",
+      "루터는 그녀를 깊이 신뢰하며 \"비텐베르크의 새벽별\"이라 불렀습니다. 그녀는 개혁의 무대 뒤에서 모든 것이 돌아가게 한 힘이었습니다."
+    ],
+    match:[
+      "당신은 말보다 행동으로 보여주는 사람입니다. 누군가 해야 할 일을 조용히 맡아 끝까지 해냅니다.",
+      "사람들을 돌보고 공동체가 잘 굴러가도록 챙기는 데 탁월한, 없어서는 안 될 든든한 존재입니다."
+    ],
+    growth:[
+      "다 떠안으려다 정작 자신을 돌보지 못할 때가 있어요. 쉼도 책임만큼 중요한 일이라는 걸 기억하세요.",
+      "묵묵히 일하는 만큼, 당신의 생각과 마음도 사람들에게 표현해 보세요. 당신의 목소리는 들을 가치가 있습니다."
+    ],
+    verse:"네 손이 일을 얻는 대로 힘을 다하여 할지어다", ref:"전도서 9:10"
+  },
+  hus: {
+    name:"얀 후스", en:"Jan Hus", life:"약 1372 – 1415 · 보헤미아(체코)", icon:"🕯️",
+    tagline:"대가를 알면서도 옳은 길을 택하는 사람. 한 세기 앞서 불씨를 지핀 신실한 선구자입니다.",
+    traits:["신실함","원칙","희생"],
+    bio:[
+      "얀 후스는 루터보다 약 100년 앞서 체코(보헤미아)에서 교회의 부패를 비판한 설교자이자 교수입니다.",
+      "그는 성경을 최고의 권위로 삼아야 한다고 가르쳤고, 백성들이 알아듣는 언어로 설교했습니다. 이 때문에 큰 위험에 처하게 됩니다.",
+      "안전을 보장하겠다는 약속을 받고 종교회의에 갔지만, 그는 신념을 굽히지 않아 1415년 화형을 당했습니다. 그의 희생은 훗날 종교개혁의 불씨가 되었습니다."
+    ],
+    match:[
+      "당신은 손해를 보더라도 옳은 일을 택하는 사람입니다. 편한 길보다 바른 길을 더 중요하게 여기지요.",
+      "지금 당장 알아주는 사람이 없어도, 묵묵히 신실하게 걸어가는 단단한 마음을 지녔습니다."
+    ],
+    growth:[
+      "원칙을 지키는 것은 귀하지만, 모든 싸움에 자신을 다 걸 필요는 없어요. 지혜롭게 때를 분별하는 것도 용기입니다.",
+      "혼자 무거운 짐을 지기보다, 같은 길을 걷는 사람들과 마음을 나누면 더 멀리 갈 수 있습니다."
+    ],
+    verse:"네가 죽도록 충성하라 그리하면 내가 생명의 관을 네게 주리라", ref:"요한계시록 2:10"
+  },
+  wycliffe: {
+    name:"존 위클리프", en:"John Wycliffe", life:"약 1328 – 1384 · 잉글랜드", icon:"🪶",
+    tagline:"조용히 씨를 뿌리는 사람. 학문과 인내로 오랜 세월 뒤에 열매 맺는 사람입니다.",
+    traits:["학구적","인내","섬김"],
+    bio:[
+      "존 위클리프는 잉글랜드 옥스퍼드의 학자로, '종교개혁의 샛별'이라 불립니다. 후스와 루터보다도 앞선 시대의 인물입니다.",
+      "그는 모든 사람이 자기 언어로 성경을 읽어야 한다고 믿었고, 라틴어로만 갇혀 있던 성경을 영어로 번역하는 일을 이끌었습니다.",
+      "그의 번역과 가르침은 당대엔 큰 박해를 받았지만, 그가 뿌린 씨앗은 세월이 흐른 뒤 후스와 종교개혁을 통해 거대한 열매로 자라났습니다."
+    ],
+    match:[
+      "당신은 눈에 띄게 나서기보다, 자기 자리에서 꾸준히 깊이 파고드는 사람입니다.",
+      "지금 당장 결과가 보이지 않아도 묵묵히 준비하고 배우며, 먼 훗날을 위한 씨앗을 심는 사람입니다."
+    ],
+    growth:[
+      "조용한 성실함은 큰 힘이에요. 다만 가끔은 당신이 한 일을 사람들이 알 수 있게 드러내는 것도 필요합니다.",
+      "혼자 깊이 들어가는 만큼, 배운 것을 곁의 사람들과 나눌 때 그 빛은 더 멀리 퍼져갑니다."
+    ],
+    verse:"주의 말씀은 내 발에 등이요 내 길에 빛이니이다", ref:"시편 119:105"
+  },
+  waldo: {
+    name:"피터 발도", en:"Peter Waldo", life:"약 1140 – 약 1205 · 프랑스 리옹", icon:"🪙",
+    tagline:"가진 것을 아낌없이 내어주는 사람. 단순하고 뜨거운 헌신으로 살아가는 사람입니다.",
+    traits:["헌신","나눔","단순한 진심"],
+    bio:[
+      "피터 발도는 프랑스 리옹의 부유한 상인이었습니다. 루터보다 무려 300여 년이나 앞선 인물입니다.",
+      "한 노래와 성경 말씀에 깊이 감동한 그는, 자신의 재산을 모두 가난한 이들에게 나누어 주고 복음을 전하는 삶을 택했습니다. 또한 성경을 일반 사람들의 언어로 번역하게 했습니다.",
+      "그를 따르는 사람들은 '리옹의 가난한 자들'이라 불렸고, 훗날 '발도파'라는 운동으로 이어져 종교개혁의 먼 선구자가 되었습니다."
+    ],
+    match:[
+      "당신은 무언가에 마음이 움직이면, 재거나 따지지 않고 온 마음으로 헌신하는 사람입니다.",
+      "가진 것을 나누고 어려운 사람 편에 서는 데 망설임이 없는, 따뜻하고 진실한 마음을 지녔습니다."
+    ],
+    growth:[
+      "뜨거운 헌신은 아름답지만, 자신을 다 태우지 않도록 균형도 챙기세요. 오래 타는 불이 더 멀리 비춥니다.",
+      "마음이 앞설 때, 잠시 멈춰 지혜롭게 살피는 시간을 가지면 그 열정이 더 단단한 열매를 맺습니다."
+    ],
+    verse:"네 소유를 팔아 가난한 자들에게 주라 ... 그리고 와서 나를 따르라", ref:"마태복음 19:21"
+  }
+};
+
+/* ============================================================
+   10 biblical-era scenario questions.
+   Each option adds points to figures via `s` (score) object.
+   ============================================================ */
+const QUESTIONS = [
+  {
+    num:"첫 번째 이야기",
+    text:"당신은 한 마을의 회당에서, 지도자들이 가난한 이들을 속이며 헌금을 가로채는 모습을 보게 됩니다.",
+    flavor:"사람들은 두려워 아무 말도 하지 못합니다. 당신은 어떻게 하겠습니까?",
+    choices:[
+      {t:"모두가 보는 앞에서 일어나 그 잘못을 분명히 지적한다.", s:{luther:2,knox:2}},
+      {t:"먼저 조용히 진실을 알아본 뒤, 글로 정리해 사람들에게 알린다.", s:{wycliffe:2,calvin:1}},
+      {t:"속은 가난한 이들에게 다가가 내 것을 나누어 돕는다.", s:{waldo:2,bora:1}},
+      {t:"이 일이 왜 일어났는지 깊이 고민하며 근본 원인을 묻는다.", s:{augustine:2,hus:1}},
+    ]
+  },
+  {
+    num:"두 번째 이야기",
+    text:"먼 길을 가던 중, 글을 읽지 못해 율법을 알 수 없는 사람들을 만났습니다.",
+    flavor:"그들은 하나님의 말씀을 직접 듣고 싶어 합니다. 당신의 마음이 가장 끌리는 일은?",
+    choices:[
+      {t:"그들이 알아들을 수 있는 말로 말씀을 풀어 적어준다.", s:{wycliffe:2,luther:1}},
+      {t:"가진 양식과 물건을 나누며 그들 곁에 머문다.", s:{waldo:2}},
+      {t:"말씀을 차근차근 체계적으로 가르쳐 스스로 알게 한다.", s:{calvin:2}},
+      {t:"그들의 삶을 돌보며 필요한 것을 직접 챙긴다.", s:{bora:2}},
+    ]
+  },
+  {
+    num:"세 번째 이야기",
+    text:"권세 있는 총독이 당신을 불러, 신앙을 버리면 높은 자리를 주겠다고 제안합니다.",
+    flavor:"거절하면 큰 위험이 따를 수 있습니다. 당신의 선택은?",
+    choices:[
+      {t:"총독의 면전에서 단호히 거절하며 두려워하지 않는다.", s:{knox:2,luther:1}},
+      {t:"대가가 따르더라도, 옳은 길을 조용히 끝까지 지킨다.", s:{hus:2}},
+      {t:"내가 진짜 믿는 것이 무엇인지 깊이 돌아본 뒤 답한다.", s:{augustine:2}},
+      {t:"흔들림 없이 거절하고, 내 사람들을 안전히 지킬 방법을 찾는다.", s:{bora:1,calvin:1,knox:1}},
+    ]
+  },
+  {
+    num:"네 번째 이야기",
+    text:"공동체가 큰 혼란에 빠졌습니다. 규칙도, 질서도 무너져 모두가 우왕좌왕합니다.",
+    flavor:"사람들이 당신을 바라봅니다. 무엇부터 하겠습니까?",
+    choices:[
+      {t:"혼란을 정리할 분명한 원칙과 체계를 세운다.", s:{calvin:2}},
+      {t:"앞장서서 사람들을 한 방향으로 이끈다.", s:{knox:2}},
+      {t:"보이지 않는 곳에서 필요한 일들을 하나씩 챙겨 돌아가게 한다.", s:{bora:2}},
+      {t:"무엇이 옳은 길인지 말씀에서 답을 찾아 외친다.", s:{luther:1,hus:1,wycliffe:1}},
+    ]
+  },
+  {
+    num:"다섯 번째 이야기",
+    text:"당신은 밤늦도록 잠들지 못하고 마음 깊은 곳의 질문과 씨름하고 있습니다.",
+    flavor:"\"나는 정말 바르게 살고 있는가?\" 이 질문 앞에서 당신은?",
+    choices:[
+      {t:"답을 찾을 때까지 깊이 묻고 또 묻는다.", s:{augustine:2}},
+      {t:"말씀을 펴서 차분히 읽으며 길을 정리한다.", s:{wycliffe:1,calvin:1}},
+      {t:"이런 고민은 잠시 접고, 내일 해야 할 일을 준비한다.", s:{bora:2}},
+      {t:"내가 옳다고 믿는 길로 일단 담대히 나아간다.", s:{knox:1,luther:1}},
+    ]
+  },
+  {
+    num:"여섯 번째 이야기",
+    text:"부유한 당신에게 어느 날, 가진 모든 것을 내려놓고 단순하게 살라는 마음의 부르심이 찾아옵니다.",
+    flavor:"머리로는 망설여집니다. 당신은 어떻게 반응하나요?",
+    choices:[
+      {t:"망설이지 않고 가진 것을 나누며 새 삶을 시작한다.", s:{waldo:2}},
+      {t:"이 부르심이 진짜인지 오래 깊이 묵상한다.", s:{augustine:2}},
+      {t:"내려놓되, 사람들을 돌볼 수 있게 지혜롭게 정리한다.", s:{bora:1,calvin:1}},
+      {t:"대가가 크더라도 옳다면 끝까지 그 길을 간다.", s:{hus:2}},
+    ]
+  },
+  {
+    num:"일곱 번째 이야기",
+    text:"많은 사람 앞에서 가르칠 기회가 주어졌습니다.",
+    flavor:"당신은 어떤 방식으로 그들의 마음에 다가가고 싶나요?",
+    choices:[
+      {t:"논리정연하고 분명하게, 한 단계씩 이해시킨다.", s:{calvin:2}},
+      {t:"뜨겁고 담대하게, 마음을 흔드는 메시지를 던진다.", s:{knox:2,luther:1}},
+      {t:"누구나 알아들을 쉬운 말로 친근하게 풀어준다.", s:{wycliffe:2}},
+      {t:"내 삶의 솔직한 고백을 나누며 진심으로 다가간다.", s:{augustine:2}},
+    ]
+  },
+  {
+    num:"여덟 번째 이야기",
+    text:"오래도록 이어온 잘못된 관습을, 모두가 \"원래 그런 것\"이라며 따르고 있습니다.",
+    flavor:"당신만이 그것이 잘못임을 느낍니다. 당신의 행동은?",
+    choices:[
+      {t:"용기를 내어 \"이건 잘못됐다\"고 공개적으로 외친다.", s:{luther:2}},
+      {t:"위험을 알면서도 신실하게 진실을 증언한다.", s:{hus:2}},
+      {t:"근거를 차곡차곡 모아 글과 가르침으로 바로잡는다.", s:{wycliffe:1,calvin:1}},
+      {t:"먼저 사람들의 삶 속으로 들어가 모범으로 보여준다.", s:{waldo:1,bora:1}},
+    ]
+  },
+  {
+    num:"아홉 번째 이야기",
+    text:"당신이 시작한 일이, 당신이 살아 있는 동안에는 열매를 보지 못할 수도 있다는 걸 알게 됩니다.",
+    flavor:"그래도 계속하겠습니까? 당신의 마음은?",
+    choices:[
+      {t:"먼 훗날을 위한 씨앗이라 믿고 묵묵히 계속한다.", s:{wycliffe:2,hus:1}},
+      {t:"옳은 일이니, 결과와 상관없이 끝까지 간다.", s:{hus:2}},
+      {t:"지금 내가 할 수 있는 일에 최선을 다해 토대를 쌓는다.", s:{calvin:1,bora:1}},
+      {t:"그 의미를 깊이 새기며, 부르심에 응답한다.", s:{augustine:1,waldo:1}},
+    ]
+  },
+  {
+    num:"열 번째 이야기",
+    text:"긴 여정의 끝, 사람들이 당신에게 묻습니다. \"당신은 무엇을 위해 살았습니까?\"",
+    flavor:"당신이 가장 하고 싶은 대답은?",
+    choices:[
+      {t:"\"잘못된 것 앞에서 침묵하지 않았다.\"", s:{luther:2,knox:1}},
+      {t:"\"모든 영광을 오직 하나님께 돌리며 바르게 세웠다.\"", s:{calvin:2}},
+      {t:"\"가진 것을 아낌없이 나누며 사랑했다.\"", s:{waldo:2}},
+      {t:"\"보이지 않아도, 끝까지 신실하게 섬겼다.\"", s:{bora:1,hus:1,wycliffe:1}},
+    ]
+  }
+];
+
+/* ============================================================
+   ENGINE
+   ============================================================ */
+let qIndex = 0;
+let scores = {};
+
+function resetScores(){
+  scores = {luther:0,augustine:0,calvin:0,knox:0,bora:0,hus:0,wycliffe:0,waldo:0};
+}
+
+function show(id){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function start(){
+  resetScores();
+  qIndex = 0;
+  show('quiz');
+  renderQuestion();
+}
+window.start = start;
+
+function renderQuestion(){
+  const q = QUESTIONS[qIndex];
+  const pct = ((qIndex)/QUESTIONS.length)*100;
+  document.getElementById('pfill').style.width = pct + '%';
+  document.getElementById('plabel').textContent = 'SCENE ' + (qIndex+1) + ' / ' + QUESTIONS.length;
+  document.getElementById('snum').textContent = q.num;
+  document.getElementById('stext').textContent = q.text;
+  document.getElementById('sflavor').textContent = q.flavor;
+
+  const box = document.getElementById('choices');
+  box.innerHTML = '';
+  // shuffle choices so position doesn't bias
+  const order = q.choices.map((c,i)=>i);
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+  order.forEach(i=>{
+    const c = q.choices[i];
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = c.t;
+    btn.onclick = ()=>choose(c.s);
+    box.appendChild(btn);
+  });
+}
+
+function choose(s){
+  for(const k in s){ scores[k] = (scores[k]||0) + s[k]; }
+  qIndex++;
+  if(qIndex >= QUESTIONS.length){
+    document.getElementById('pfill').style.width = '100%';
+    setTimeout(showResult, 250);
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult(){
+  // find highest; tie-break by a fixed priority so it's deterministic-ish
+  let best = null, bestVal = -1;
+  const priority = ['luther','calvin','knox','augustine','waldo','hus','wycliffe','bora'];
+  priority.forEach(k=>{
+    if(scores[k] > bestVal){ bestVal = scores[k]; best = k; }
+  });
+  const f = FIGURES[best];
+
+  document.getElementById('rPortrait').textContent = f.icon;
+  document.getElementById('rName').textContent = f.name;
+  document.getElementById('rNameEn').textContent = f.en;
+  document.getElementById('rLife').textContent = f.life;
+  document.getElementById('rTagline').textContent = f.tagline;
+
+  document.getElementById('rTraits').innerHTML = f.traits.map(t=>'<span>'+t+'</span>').join('');
+  document.getElementById('rBio').innerHTML = f.bio.map(p=>'<p>'+p+'</p>').join('');
+  document.getElementById('rMatch').innerHTML = f.match.map(p=>'<p>'+p+'</p>').join('');
+  document.getElementById('rGrowth').innerHTML = f.growth.map(p=>'<p>'+p+'</p>').join('');
+  document.getElementById('rVerse').innerHTML = '"'+f.verse+'"<span class="ref">'+f.ref+'</span>';
+
+  show('result');
+}
+
+function restart(){
+  show('intro');
+}
+window.restart = restart;
+
+/* ===== Info modal (clickable figure tags) ===== */
+function showInfo(key){
+  const f = FIGURES[key];
+  if(!f) return;
+  document.getElementById('mPortrait').textContent = f.icon;
+  document.getElementById('mName').textContent = f.name;
+  document.getElementById('mNameEn').textContent = f.en;
+  document.getElementById('mLife').textContent = f.life;
+  document.getElementById('mTraits').innerHTML = f.traits.map(t=>'<span>'+t+'</span>').join('');
+  document.getElementById('mBio').innerHTML = f.bio.map(p=>'<p>'+p+'</p>').join('');
+  document.getElementById('mVerse').innerHTML = '"'+f.verse+'"<span class="ref">'+f.ref+'</span>';
+  document.getElementById('infoModal').classList.add('on');
+}
+window.showInfo = showInfo;
+
+function closeInfo(){
+  document.getElementById('infoModal').classList.remove('on');
+}
+window.closeInfo = closeInfo;
+
+function closeInfoBg(e){
+  if(e.target === document.getElementById('infoModal')) closeInfo();
+}
+window.closeInfoBg = closeInfoBg;
+
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeInfo(); });
+</script>
+<script>
+/* ===== Animated starfield + occasional shooting stars ===== */
+(function(){
+  const canvas = document.getElementById('starCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, stars = [], shooters = [];
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    const count = Math.min(220, Math.floor(w*h/7000));
+    stars = [];
+    for(let i=0;i<count;i++){
+      stars.push({
+        x:Math.random()*w, y:Math.random()*h,
+        r:Math.random()*1.3+0.3,
+        base:Math.random()*0.5+0.3,
+        amp:Math.random()*0.5+0.2,
+        sp:Math.random()*0.025+0.005,
+        ph:Math.random()*Math.PI*2,
+        gold:Math.random()<0.18
+      });
+    }
+  }
+
+  function spawnShooter(){
+    const fromLeft = Math.random()<0.5;
+    shooters.push({
+      x: fromLeft ? -50 : w*Math.random(),
+      y: Math.random()*h*0.5,
+      vx:(fromLeft?1:-0.6)*(Math.random()*4+5),
+      vy:Math.random()*2+2,
+      life:0, max:Math.random()*40+40
+    });
+  }
+
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    t+=1;
+    // stars
+    for(const s of stars){
+      const tw = s.base + s.amp*Math.sin(t*s.sp + s.ph);
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      if(s.gold){
+        ctx.fillStyle = 'rgba(232,198,106,'+Math.max(0,tw)+')';
+        ctx.shadowColor='rgba(232,198,106,.8)';
+      } else {
+        ctx.fillStyle = 'rgba(220,233,255,'+Math.max(0,tw)+')';
+        ctx.shadowColor='rgba(180,210,255,.7)';
+      }
+      ctx.shadowBlur = s.r*3;
+      ctx.fill();
+    }
+    ctx.shadowBlur=0;
+    // shooting stars
+    for(let i=shooters.length-1;i>=0;i--){
+      const sh=shooters[i];
+      sh.life++;
+      sh.x+=sh.vx; sh.y+=sh.vy;
+      const alpha = Math.sin((sh.life/sh.max)*Math.PI);
+      const len = 60;
+      const grad = ctx.createLinearGradient(sh.x,sh.y,sh.x-sh.vx/Math.hypot(sh.vx,sh.vy)*len,sh.y-sh.vy/Math.hypot(sh.vx,sh.vy)*len);
+      grad.addColorStop(0,'rgba(255,255,255,'+alpha+')');
+      grad.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.strokeStyle=grad; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(sh.x,sh.y);
+      ctx.lineTo(sh.x-sh.vx/Math.hypot(sh.vx,sh.vy)*len, sh.y-sh.vy/Math.hypot(sh.vx,sh.vy)*len);
+      ctx.stroke();
+      if(sh.life>sh.max || sh.x>w+60 || sh.x<-60) shooters.splice(i,1);
+    }
+    if(Math.random()<0.004 && shooters.length<2) spawnShooter();
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+</script>
+</body>
+</html>
